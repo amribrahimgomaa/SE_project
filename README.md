@@ -1,6 +1,6 @@
 Clinic Management System
 This is a web-based application designed to streamline and automate the management processes within a clinic or healthcare environment. It allows administrators, doctors, receptionists, and patients to interact efficiently, improving overall workflow and service delivery.
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Notify doctors of appointments.
 Send confirmation messages to patients.
 Technologies Used
