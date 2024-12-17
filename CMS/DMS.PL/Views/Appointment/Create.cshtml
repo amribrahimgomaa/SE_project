@@ -1,0 +1,119 @@
+﻿@model AppointmentVM
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h4 class="text-center"> Create Appointment </h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" >
+            <div class="form-group">
+                <label asp-for="PatientName" class="control-label">Patient Name</label>
+                <input asp-for="PatientName" class="form-control" id="patientName" />
+                <input asp-for="PatientId" type="hidden" id="patientId" />
+                <span asp-validation-for="PatientName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PatientBirthDate" class="control-label">Patient BirthDay</label>
+                <input asp-for="PatientBirthDate" class="form-control" type="date" />
+                <span asp-validation-for="PatientBirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PatientAddress" class="control-label">Patient Address</label>
+                <input asp-for="PatientAddress" class="form-control" />
+                <span asp-validation-for="PatientAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PatientPhoneNumber" class="control-label">Patient Phone Number</label>
+                <input asp-for="PatientPhoneNumber" class="form-control" />
+                <span asp-validation-for="PatientPhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PatientSSN" class="control-label">Patient SSN</label>
+                <input asp-for="PatientSSN" class="form-control" />
+                <span asp-validation-for="PatientSSN" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DoctorId" class="control-label">Doctor Name</label>
+                <select asp-for="DoctorId" class="form-control" asp-items="ViewBag.Doctors">
+                    <option value="">Select Doctor Name</option>
+                </select>
+                <span asp-validation-for="DoctorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AppointmentDate" class="control-label">Appointment Date</label>
+                <input asp-for="AppointmentDate" class="form-control" type="date"/>
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label"></label>
+                <input asp-for="StartTime" class="form-control" type="time" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label"></label>
+                <input asp-for="EndTime" class="form-control" type="time"/>
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-outline-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#DoctorID, #AppointmentDate').change(function () {
+                var doctorId = $('#DoctorID').val();
+                var date = $('#AppointmentDate').val();
+
+                if (doctorId && date) {
+                    $.getJSON('@Url.Action("GetAvailableSlots", "Appointment")', { doctorId: doctorId, date: date }, function (data) {
+                        var items = '<option value="">Select a time</option>';
+                        $.each(data, function (i, slot) {
+                            items += "<option value='" + slot.value + "'>" + slot.text + "</option>";
+                        });
+                        $('#StartTime').html(items);
+                    });
+                }
+            });
+            $('#StartTime').change(function () {
+                var startTime = $(this).val();
+                if (startTime) {
+                    var endTime = new Date("1970-01-01T" + startTime + "Z");
+                    endTime.setMinutes(endTime.getMinutes() + 30);
+                    var formattedEndTime = endTime.toISOString().substring(11, 16);
+                    $('#EndTime').val(formattedEndTime);
+                } else {
+                    $('#EndTime').val('');
+                }
+            });
+
+            $('#patientName').on('change', function () {
+                var selectedPatientName = $(this).val();
+
+                $.getJSON('@Url.Action("GetPatientIdByName", "Patient")', { name: selectedPatientName })
+            .done(function (data) {
+                $('#patientId').val(data.patientId);
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                alert('Error: ' + errorThrown);
+            });
+            });
+        });
+    </script>
+}
