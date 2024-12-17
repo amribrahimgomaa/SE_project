@@ -10,3 +10,6 @@ Scripts: JavaScript, jQuery
 Database: SQL Server
 Version Control: Git
 Object Mapping: AutoMapper
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The code in CMS folder 
+The Docs in DOCS folder
